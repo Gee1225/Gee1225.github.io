@@ -1,0 +1,34 @@
+name: Update Talk Locations
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * *'  # Optional: runs daily
+
+jobs:
+  update-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Make changes
+        run: |
+          # Replace this with your script/command to update talk locations
+          echo "Updated at $(date)" >> talk-locations.log
+
+      - name: Commit changes
+        run: |
+          git add .
+          git commit -m "Automated update of talk locations" || echo "No changes to commit"
+
+      - name: Push changes
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git push origin HEAD
