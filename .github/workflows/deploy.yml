@@ -5,13 +5,15 @@ on:
     branches:
       - master
   schedule:
-    - cron: '0 0 * * *'  # Optional: runs daily
+    - cron: '0 0 * * *'  # Runs daily
 
 jobs:
   update-site:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          persist-credentials: true
 
       - name: Configure Git
         run: |
@@ -20,7 +22,6 @@ jobs:
 
       - name: Make changes
         run: |
-          # Replace this with your script/command to update talk locations
           echo "Updated at $(date)" >> talk-locations.log
 
       - name: Commit changes
