@@ -33,6 +33,10 @@ jobs:
         run: |
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
 
+      - name: Pull remote changes
+        run: |
+          git pull --rebase origin $(git rev-parse --abbrev-ref HEAD)
+
       - name: Push changes
         run: |
           git push origin HEAD
