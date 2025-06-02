@@ -20,6 +20,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Pull latest from remote (overwrite local)
+        run: |
+          git fetch origin
+          git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
+
       - name: Make changes
         run: |
           echo "Updated at $(date)" >> talk-locations.log
@@ -32,10 +37,6 @@ jobs:
       - name: Set remote with token
         run: |
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-
-      - name: Pull remote changes
-        run: |
-          git pull --rebase origin $(git rev-parse --abbrev-ref HEAD)
 
       - name: Push changes
         run: |
