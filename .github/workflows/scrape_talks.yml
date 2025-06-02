@@ -1,36 +1,37 @@
-name: Scrape Talk Locations
+name: Update Talk Locations
 
 on:
   push:
-    paths:
-      - 'talks/**'
-      - 'talkmap.ipynb'
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * *'  # Optional: runs daily
 
 jobs:
-  build:
+  update-site:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'  # Specify the Python version you need
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-    - name: Install dependencies
-      run: |
-        pip install jupyter pandas requests beautifulsoup4 geopy  # Add other dependencies as needed
-        pip install getorg --upgrade
+      - name: Make changes
+        run: |
+          # Replace this with your script/command to update talk locations
+          echo "Updated at $(date)" >> talk-locations.log
 
-    - name: Run Jupyter Notebook
-      run: |
-        jupyter nbconvert --to notebook --execute talkmap.ipynb --output talkmap_out.ipynb
+      - name: Commit changes
+        run: |
+          git add .
+          git commit -m "Automated update of talk locations" || echo "No changes to commit"
 
-    - name: Commit changes
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add .
-        git commit -m "Automated update of talk locations" || echo "No changes to commit"
-        git push
+      - name: Set remote with token
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
+      - name: Push changes
+        run: |
+          git push origin HEAD
